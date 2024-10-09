@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter/services.dart'; // Import this for input formatter
-import '/widgets/custom_button.dart'; // Ensure you import the custom button
+import 'package:flutter/services.dart';
+import '/widgets/custom_button.dart';
 
 class OTPScreen extends StatefulWidget {
   final String mobileNumber;

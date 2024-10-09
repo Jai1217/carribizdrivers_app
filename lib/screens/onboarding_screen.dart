@@ -22,8 +22,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void startAutoScroll() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_currentPage < 3) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_currentPage < 2) { // Now allows for three pages (0, 1, 2)
         _currentPage++;
         _pageController.animateToPage(
           _currentPage,
@@ -48,7 +48,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _goToNextPage() {
-    if (_currentPage < 3) {
+    if (_currentPage < 2) { // Now allows for three pages (0, 1, 2)
       _currentPage++;
       _pageController.animateToPage(
         _currentPage,
@@ -56,6 +56,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
+      // Navigate to the LoginScreen if on the last page
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -76,23 +77,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           _buildOnboardingPage(
             context,
-            "assets/your_image.png", // Image asset
-            "Earn upto ₹40,000 monthly",
+            "assets/onboardingone.png", // Image asset for the first screen
+            "Secure and Transparent Earnings",
             "Plus additional joining and referral incentives",
+            const Color(0xFF6F00FF), // Background color for the first screen
           ),
-          // Add other pages here with similar structure
+          _buildOnboardingPage(
+            context,
+            "assets/image2.png", // Image asset for the second screen
+            "Flexible working hours",
+            "Work at your convenience",
+            const Color(0xFF00BFFF), // Background color for the second screen
+          ),
+          _buildOnboardingPage(
+            context,
+            "assets/image3.png", // Image asset for the third screen
+            "Easy to use app",
+            "Seamless experience for all users",
+            const Color(0xFFFF6347), // Background color for the third screen
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildOnboardingPage(BuildContext context, String imagePath, String title, String subtitle) {
+  Widget _buildOnboardingPage(BuildContext context, String imagePath, String title, String subtitle, Color backgroundColor) {
     return Container(
-      color: const Color(0xFF6F00FF), // Your background color
+      color: backgroundColor, // Set the background color based on the parameter
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
+          const Spacer(), // Spacer for top alignment
           Stack(
             alignment: Alignment.center,
             children: [
@@ -124,10 +138,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: const TextStyle(fontSize: 16, color: Colors.white),
             textAlign: TextAlign.center,
           ),
-          const Spacer(),
+          const Spacer(), // Spacer for bottom alignment
+          Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40), // Add padding on the sides
+                  child: ElevatedButton(
+                    onPressed: _goToNextPage,
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: const Color(0xFF6F00FF),
+                      backgroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: const Text("Next", style: TextStyle(fontSize: 18)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(4, (index) {
+            children: List.generate(3, (index) { // Update number of indicators based on pages
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 5),
                 width: _currentPage == index ? 12 : 8,
@@ -138,18 +171,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               );
             }),
-          ),
-          const SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: ElevatedButton(
-              onPressed: _goToNextPage,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: const Color(0xFF6F00FF), backgroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text("Next", style: TextStyle(fontSize: 18)),
-            ),
           ),
           const SizedBox(height: 30),
         ],

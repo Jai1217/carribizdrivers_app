@@ -16,7 +16,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
@@ -26,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
               Center(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16.0), // Adjust the radius as needed
+                  borderRadius: BorderRadius.circular(16.0),
                   child: Image.asset(
                     'assets/images/driversinginpage.png',
                     height: 300,
@@ -50,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -65,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               const Text(
                 'Verify your mobile number to access our services',
-                style: TextStyle(fontSize: 16, color: Colors.white54),
+                style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
               const SizedBox(height: 30),
               Form(
@@ -76,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _phoneController,
                       keyboardType: TextInputType.phone,
                       inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly, // Only allow digits
+                        FilteringTextInputFormatter.digitsOnly,
                       ],
                       decoration: InputDecoration(
                         prefixIcon: const Padding(
@@ -84,30 +83,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                '🇮🇳',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              Text('🇮🇳', style: TextStyle(fontSize: 24)),
                               SizedBox(width: 8),
-                              Text(
-                                '+91',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              Text('+91', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ),
                         hintText: 'Enter Mobile Number',
-                        hintStyle: const TextStyle(color: Colors.white54),
+                        hintStyle: const TextStyle(color: Colors.black54),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(color: Colors.teal),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
@@ -115,7 +100,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         contentPadding: const EdgeInsets.all(18.0),
                       ),
-                      style: const TextStyle(color: Colors.white),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your mobile number';
@@ -129,18 +113,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     GestureDetector(
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.pushNamed(
-                            context,
-                            '/otp',
-                            arguments: _phoneController.text,
-                          );
+                          Navigator.pushNamed(context, '/otp', arguments: _phoneController.text);
                         }
                       },
                       child: Container(
                         width: double.infinity,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: const Color.fromRGBO(160, 34, 45, 45),
+                          color: Colors.teal,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Center(
