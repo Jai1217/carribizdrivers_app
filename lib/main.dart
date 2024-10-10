@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/otp_screen.dart';
-import 'onboarding/onboarding_file1.dart';
+import 'onboarding/onboarding_main.dart'; // Import the new OnboardingMain widget
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
           hintStyle: TextStyle(color: Colors.grey),
         ),
       ),
-      home: const OnboardingScreen1(), // This will be the first screen when the app opens
+      home: const OnboardingMain(), // Use the new OnboardingMain as the initial screen
       routes: {
         '/login': (context) => const LoginScreen(),
         '/otp': (context) => OTPScreen(
