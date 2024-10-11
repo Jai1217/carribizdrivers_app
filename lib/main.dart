@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/otp': (context) => OTPScreen(
-          mobileNumber: ModalRoute.of(context)!.settings.arguments as String,
+          mobileNumber: ModalRoute.of(context)!.settings.arguments as String, onVerificationSuccess: () {  }, phoneNumber: '',
         ),
       },
     );

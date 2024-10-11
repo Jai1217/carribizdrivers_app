@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'otp_screen.dart';
+import 'registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -113,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     GestureDetector(
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.pushNamed(context, '/otp', arguments: _phoneController.text);
+                          _navigateToOtpScreen(context);
                         }
                       },
                       child: Container(
@@ -140,6 +142,25 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToOtpScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OTPScreen(
+          phoneNumber: _phoneController.text,
+          onVerificationSuccess: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RegistrationScreen(phoneNumber: _phoneController.text),
+              ),
+            );
+          }, mobileNumber: '',
         ),
       ),
     );

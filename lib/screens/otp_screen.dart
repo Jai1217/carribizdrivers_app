@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import '/widgets/custom_button.dart';
+import 'registration_screen.dart'; // Import your registration screen here
 
 class OTPScreen extends StatefulWidget {
   final String mobileNumber;
 
-  const OTPScreen({super.key, required this.mobileNumber});
+  const OTPScreen({super.key, required this.mobileNumber, required String phoneNumber, required Null Function() onVerificationSuccess});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -110,8 +111,6 @@ class _OTPScreenState extends State<OTPScreen> {
               ),
             ),
             const SizedBox(height: 30),
-
-            // GestureDetector for tapping on OTP field and typing the OTP
             GestureDetector(
               onTap: () {
                 _otpFocusNode.requestFocus();
@@ -122,45 +121,42 @@ class _OTPScreenState extends State<OTPScreen> {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Hidden TextField for OTP input
             TextField(
               controller: _otpController,
               focusNode: _otpFocusNode,
               keyboardType: TextInputType.number,
               inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly, // Only allow digits
+                FilteringTextInputFormatter.digitsOnly,
               ],
-              maxLength: 6, // Limit OTP to 6 digits
+              maxLength: 6,
               onChanged: (value) {
-                setState(() {}); // Update UI as user types in OTP
+                setState(() {});
                 if (value.length == 6) {
-                  _otpFocusNode.unfocus(); // Remove focus once 6 digits are entered
+                  _otpFocusNode.unfocus();
                 }
               },
               style: const TextStyle(
                 color: Colors.transparent,
-                height: 0.01, // Make text invisible
+                height: 0.01,
               ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
-                counterText: '', // Hide character counter
+                counterText: '',
               ),
             ),
             const SizedBox(height: 30),
-
-            // Login button using the custom button widget
             CustomButton(
               text: 'Login',
               onPressed: () {
-                // Handle login button press
+                // Navigate to the registration screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegistrationScreen(phoneNumber: '',)), // Replace with your registration screen widget
+                );
               },
-              color: const Color.fromRGBO(160, 34, 45, 45), // Replace with your desired color
+              color: const Color.fromRGBO(160, 34, 45, 45),
             ),
-
             const SizedBox(height: 20),
-
-            // Resend Code button as a bordered container
             SizedBox(
               width: double.infinity,
               child: Container(
@@ -170,7 +166,6 @@ class _OTPScreenState extends State<OTPScreen> {
                 ),
                 child: TextButton(
                   onPressed: _isResendButtonEnabled ? () {
-                    // Handle resend code
                     _startTimer(); // Restart the timer
                   } : null,
                   style: TextButton.styleFrom(
@@ -186,10 +181,7 @@ class _OTPScreenState extends State<OTPScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-
-            // Timer text
             Text(
               'Valid for $_secondsRemaining seconds',
               style: const TextStyle(

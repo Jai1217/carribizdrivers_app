@@ -12,7 +12,7 @@ class OnboardingScreen3 extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [Color(0xFF388E3C), Color(0xFFA5D6A7)],
+          colors: [Color(0xFFE67E00), Color(0xFFC26900),],
         ),
       ),
       child: SafeArea(
@@ -40,11 +40,11 @@ class OnboardingScreen3 extends StatelessWidget {
                 children: [
                   for (var i = 5; i > 0; i--)
                     Container(
-                      width: MediaQuery.of(context).size.width * (0.2 + (i * 0.1)),
-                      height: MediaQuery.of(context).size.width * (0.2 + (i * 0.1)),
+                      width: MediaQuery.of(context).size.width * (0.3 + (i * 0.1)),
+                      height: MediaQuery.of(context).size.width * (0.3 + (i * 0.1)),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.01 + (i * 0.015)),
+                        color: Colors.white.withOpacity(0.01 + (i * 0.01)),
                       ),
                     ),
                   Image.asset(
@@ -55,8 +55,7 @@ class OnboardingScreen3 extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            const Spacer(), // This moves the content upward
+            ), // This moves the content upward
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
@@ -72,14 +71,14 @@ class OnboardingScreen3 extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Expand your reach and get more orders',
+                    'Expand your reach and get more orders, more earnings',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
                     ),
                   ),
-                  const SizedBox(height: 40), // Increased spacing
+                  const SizedBox(height: 30), // Increased spacing
                   ElevatedButton(
                     onPressed: onGetStartedPressed,
                     style: ElevatedButton.styleFrom(
@@ -90,7 +89,7 @@ class OnboardingScreen3 extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Get Started'),
+                    child: const Text('Get Started', style: TextStyle(fontSize: 18)),
                   ),
                 ],
               ),

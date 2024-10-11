@@ -32,11 +32,11 @@ class OnboardingScreen1 extends StatelessWidget {
                   // Larger ripple effect circles
                   for (var i = 5; i > 0; i--)
                     Container(
-                      width: MediaQuery.of(context).size.width * (0.2 + (i * 0.1)),
-                      height: MediaQuery.of(context).size.width * (0.2 + (i * 0.1)),
+                      width: MediaQuery.of(context).size.width * (0.3 + (i * 0.1)),
+                      height: MediaQuery.of(context).size.width * (0.3 + (i * 0.1)),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.01 + (i * 0.005)),
+                        color: Colors.white.withOpacity(0.01 + (i * 0.01)),
                       ),
                     ),
                   // Central icon with 216px size
@@ -56,7 +56,7 @@ class OnboardingScreen1 extends StatelessWidget {
                   const Text(
                     'Secure and Transparent Earnings',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -71,7 +71,7 @@ class OnboardingScreen1 extends StatelessWidget {
                       color: Colors.white.withOpacity(0.8),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: onNextPressed,
                     style: ElevatedButton.styleFrom(
