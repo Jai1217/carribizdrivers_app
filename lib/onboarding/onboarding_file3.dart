@@ -40,17 +40,17 @@ class OnboardingScreen3 extends StatelessWidget {
                 children: [
                   for (var i = 5; i > 0; i--)
                     Container(
-                      width: MediaQuery.of(context).size.width * (1.2 - (i * 0.1)),
-                      height: MediaQuery.of(context).size.width * (1.2 - (i * 0.1)),
+                      width: MediaQuery.of(context).size.width * (0.2 + (i * 0.1)),
+                      height: MediaQuery.of(context).size.width * (0.2 + (i * 0.1)),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.1 - (i * 0.015)),
+                        color: Colors.white.withOpacity(0.01 + (i * 0.015)),
                       ),
                     ),
                   Image.asset(
                     'assets/images/onboardingt.png',
-                    width: 216,  // Fixed width
-                    height: 216, // Fixed height
+                    width: 140,  // Fixed width
+                    height: 140, // Fixed height
                     fit: BoxFit.contain,
                   ),
                 ],
@@ -83,7 +83,7 @@ class OnboardingScreen3 extends StatelessWidget {
                   ElevatedButton(
                     onPressed: onGetStartedPressed,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.green,
+                      foregroundColor: const Color.fromRGBO(160, 34, 45, 45),
                       backgroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
