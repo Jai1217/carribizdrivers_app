@@ -1,5 +1,3 @@
-// onboarding_file3.dart
-
 import 'package:flutter/material.dart';
 
 class OnboardingScreen3 extends StatelessWidget {
@@ -27,7 +25,7 @@ class OnboardingScreen3 extends StatelessWidget {
                 alignment: Alignment.topRight,
                 child: TextButton(
                   child: const Text(
-                    'English',
+                    '',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
@@ -50,20 +48,21 @@ class OnboardingScreen3 extends StatelessWidget {
                       ),
                     ),
                   Image.asset(
-                    'assets/images/onboarding3.png',
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    height: MediaQuery.of(context).size.width * 0.6,
+                    'assets/images/onboardingt.png',
+                    width: 216,  // Fixed width
+                    height: 216, // Fixed height
                     fit: BoxFit.contain,
                   ),
                 ],
               ),
             ),
+            const Spacer(), // This moves the content upward
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 children: [
                   const Text(
-                    'Join a community of drivers',
+                    'Access to a Wider Range',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -73,14 +72,14 @@ class OnboardingScreen3 extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Be part of a supportive and growing community',
+                    'Expand your reach and get more orders',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40), // Increased spacing
                   ElevatedButton(
                     onPressed: onGetStartedPressed,
                     style: ElevatedButton.styleFrom(
@@ -96,6 +95,7 @@ class OnboardingScreen3 extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 30), // Optional: Adjust if you want more space at the bottom
           ],
         ),
       ),

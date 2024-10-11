@@ -27,7 +27,7 @@ class OnboardingScreen2 extends StatelessWidget {
                 alignment: Alignment.topRight,
                 child: TextButton(
                   child: const Text(
-                    'English',
+                    '',
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
@@ -50,7 +50,7 @@ class OnboardingScreen2 extends StatelessWidget {
                       ),
                     ),
                   Image.asset(
-                    'assets/images/onboarding2.png',
+                    'assets/images/onboardings.png',
                     width: MediaQuery.of(context).size.width * 0.6,
                     height: MediaQuery.of(context).size.width * 0.6,
                     fit: BoxFit.contain,
@@ -58,12 +58,13 @@ class OnboardingScreen2 extends StatelessWidget {
                 ],
               ),
             ),
+            const Spacer(), // This pushes the content upward
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 children: [
                   const Text(
-                    'Join a community of drivers',
+                    'We Care for your Earnings',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -73,14 +74,14 @@ class OnboardingScreen2 extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Be part of a supportive and growing community',
+                    'Early payouts for all our rides',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 40), // Increased spacing
                   ElevatedButton(
                     onPressed: onNextPressed,
                     style: ElevatedButton.styleFrom(
@@ -96,6 +97,7 @@ class OnboardingScreen2 extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 30), // Optional to move the button up further
           ],
         ),
       ),
