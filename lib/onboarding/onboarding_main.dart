@@ -5,8 +5,7 @@ import 'package:carribizdrivers_app/onboarding/onboarding_file2.dart';
 import 'package:carribizdrivers_app/onboarding/onboarding_file3.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:carribizdrivers_app/screens/login_screen.dart';
-
+import 'package:carribizdrivers_app/permissions/location_permission_screen.dart'; // Import the new screen
 
 class OnboardingMain extends StatefulWidget {
   const OnboardingMain({super.key});
@@ -43,8 +42,9 @@ class _OnboardingMainState extends State<OnboardingMain> {
           curve: Curves.easeInOut,
         );
       } else {
+        // Navigate to the Location Permission Screen after onboarding
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          MaterialPageRoute(builder: (context) => const LocationPermissionScreen()),
         );
       }
     });
@@ -76,7 +76,7 @@ class _OnboardingMainState extends State<OnboardingMain> {
               )),
               OnboardingScreen3(onGetStartedPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const LocationPermissionScreen()),
                 );
               }),
             ],

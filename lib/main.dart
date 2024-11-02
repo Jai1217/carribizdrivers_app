@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/login_screen.dart';
-import 'screens/otp_screen.dart';
-import 'onboarding/onboarding_main.dart'; // Import the new OnboardingMain widget
+import 'screens/login_screen.dart'; // Import your login screen
+import 'screens/registration_screen.dart'; // Import your registration screen
+import 'screens/camera_registration.dart'; // Import your camera registration screen
 
 void main() {
   runApp(const MyApp());
@@ -13,20 +13,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Carribiz Users App',
+      title: 'CarriBiz Delivery Partner',
       theme: ThemeData(
-        primaryColor: Colors.teal,
-        scaffoldBackgroundColor: Colors.white,
-        inputDecorationTheme: const InputDecorationTheme(
-          hintStyle: TextStyle(color: Colors.grey),
-        ),
+        primarySwatch: Colors.blue,
       ),
-      home: const OnboardingMain(), // Use the new OnboardingMain as the initial screen
+      initialRoute: '/', // Set the initial route
       routes: {
-        '/login': (context) => const LoginScreen(),
-        '/otp': (context) => OTPScreen(
-          mobileNumber: ModalRoute.of(context)!.settings.arguments as String, onVerificationSuccess: () {  }, phoneNumber: '',
-        ),
+        '/': (context) => const LoginScreen(), // Your login screen
+        '/registration': (context) => const RegistrationScreen(), // Your registration screen
+        '/camera_registration': (context) => const CameraGuideScreen(), // Your camera registration screen
       },
     );
   }

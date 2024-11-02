@@ -1,11 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'camera_registration.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  final String phoneNumber;
-
-  const RegistrationScreen({super.key, required this.phoneNumber});
+  const RegistrationScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -17,16 +16,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  String? _identityProof, _licenseNumber, _vehicleType, _vehicleNumber, _vehicleCapacity;
+  final TextEditingController _licenseNumberController = TextEditingController();
+  final TextEditingController _vehicleNumberController = TextEditingController();
+  final TextEditingController _vehicleNameController = TextEditingController();
+  final TextEditingController _vehicleCapacityController = TextEditingController();
+  String? _identityProof, _vehicleType;
   bool _isIdentityProofUploaded = false;
   bool _isLicenseUploaded = false;
   bool _isVehiclePhotoUploaded = false;
+  bool _showIdentityProofOptions = false;
+  bool _showVehicleTypeOptions = false;
 
   @override
   void dispose() {
     _fullNameController.dispose();
     _emailController.dispose();
     _addressController.dispose();
+    _licenseNumberController.dispose();
+    _vehicleNumberController.dispose();
+    _vehicleNameController.dispose();
+    _vehicleCapacityController.dispose();
     super.dispose();
   }
 
@@ -44,32 +53,88 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               children: [
                 const Text(
                   'Register with us',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Roboto'),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Modern Sans Serif'),
                 ),
                 const Text(
                   'so that we can get to know you',
-                  style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: 'Roboto'),
+                  style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: 'Modern Sans Serif'),
                 ),
                 const SizedBox(height: 24),
-                _buildTextField('Full Name', _fullNameController),
-                _buildTextField('Phone Number', null, initialValue: widget.phoneNumber, enabled: false),
+                _buildTextField(
+                  'Full Name',
+                  _fullNameController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                  ],
+                ),
                 _buildTextField('Email', _emailController, keyboardType: TextInputType.emailAddress),
                 _buildTextField('Address', _addressController, maxLines: 3),
-                _buildDropdown('Identity Proof', ['Aadhar Card', 'Pan Card'], (value) => setState(() => _identityProof = value)),
+                _buildCustomDropdown(
+                  'Identity Proof',
+                  ['Aadhar Card', 'Pan Card'],
+                  _identityProof,
+                  _showIdentityProofOptions,
+                  (value) {
+                    setState(() {
+                      _identityProof = value;
+                      _showIdentityProofOptions = false;
+                    });
+                  },
+                  () => setState(() => _showIdentityProofOptions = !_showIdentityProofOptions),
+                ),
                 if (_identityProof != null)
-                  _buildUploadButton('Upload Identity Proof', () => setState(() => _isIdentityProofUploaded = true)),
-                _buildUploadButton('Upload License', () => setState(() => _isLicenseUploaded = true)),
-                _buildTextField('License Number', _licenseNumber as TextEditingController?),
-                _buildDropdown('Vehicle Type', ['Bike', 'Truck', 'Minitruck'], (value) => setState(() => _vehicleType = value)),
-                _buildTextField('Vehicle Number', _vehicleNumber as TextEditingController?, inputFormatters: [UpperCaseTextFormatter()]),
-                _buildTextField('Vehicle Capacity', _vehicleCapacity as TextEditingController?),
-                _buildUploadButton('Upload Vehicle Photo', () => setState(() => _isVehiclePhotoUploaded = true)),
+                  _buildUploadButton('Upload Identity Proof', () => _requestStoragePermissionAndUpload('identityProof')),
+                _buildUploadButton('Upload License', () => _requestStoragePermissionAndUpload('license')),
+                _buildTextField(
+                  'License Number',
+                  _licenseNumberController,
+                  inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))],
+                ),
+                _buildCustomDropdown(
+                  'Vehicle Type',
+                  ['Bike', 'Truck', 'Minitruck', 'Pickup', '3 Wheeler'],
+                  _vehicleType,
+                  _showVehicleTypeOptions,
+                  (value) {
+                    setState(() {
+                      _vehicleType = value;
+                      _showVehicleTypeOptions = false;
+                      if (_vehicleType == 'Bike') {
+                        _vehicleCapacityController.clear();
+                      }
+                    });
+                  },
+                  () => setState(() => _showVehicleTypeOptions = !_showVehicleTypeOptions),
+                ),
+                _buildTextField(
+                  'Vehicle Name',
+                  _vehicleNameController,
+                  hintText: 'e.g.,Mahindra Bolero Pikup',
+                ),
+                _buildTextField(
+                  'Vehicle Number',
+                  _vehicleNumberController,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
+                    UpperCaseTextFormatter(),
+                  ],
+                  hintText: 'e.g., TSXX XX XXXX',
+                ),
+                _buildTextField(
+                  'Vehicle Capacity',
+                  _vehicleCapacityController,
+                  hintText: 'e.g., in kgs',
+                  enabled: _vehicleType != 'Bike',
+                ),
+                _buildUploadButton('Upload Vehicle Photo', () => _requestStoragePermissionAndUpload('vehiclePhoto')),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _isFormComplete() ? _submitForm : null,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    backgroundColor: const Color.fromRGBO(160, 34, 45, 1),
+                    foregroundColor: Colors.white,
                   ),
                   child: const Text('Complete'),
                 ),
@@ -81,7 +146,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController? controller, {String? initialValue, bool enabled = true, int maxLines = 1, TextInputType keyboardType = TextInputType.text, List<TextInputFormatter>? inputFormatters}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController? controller, {
+    String? initialValue,
+    bool enabled = true,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
+    String? hintText,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -93,30 +167,96 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         inputFormatters: inputFormatters,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          hintText: hintText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Colors.grey, width: 2.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(color: Color.fromRGBO(160, 34, 45, 1), width: 2.0),
+          ),
         ),
-        style: const TextStyle(fontFamily: 'Roboto'),
+        style: const TextStyle(fontFamily: 'Modern Sans Serif'),
         validator: (value) => value?.isEmpty ?? true ? 'This field is required' : null,
       ),
     );
   }
 
-  Widget _buildDropdown(String label, List<String> items, Function(String?) onChanged) {
+  Widget _buildCustomDropdown(
+    String label,
+    List<String> items,
+    String? value,
+    bool showOptions,
+    Function(String?) onChanged,
+    VoidCallback onTap,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        items: items.map((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value, style: const TextStyle(fontFamily: 'Roboto')),
-          );
-        }).toList(),
-        onChanged: onChanged,
-        validator: (value) => value == null ? 'This field is required' : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: onTap,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey, width: 2.0),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          value ?? 'Select $label',
+                          style: TextStyle(
+                            color: value == null ? Colors.grey : Colors.black,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Icon(
+                          showOptions ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (showOptions)
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: Column(
+                        children: items.map((item) => InkWell(
+                          onTap: () => onChanged(item),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: value == item ? Colors.grey.shade200 : Colors.white,
+                            ),
+                            child: Text(item, style: const TextStyle(fontSize: 16)),
+                          ),
+                        )).toList(),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -126,51 +266,63 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       padding: const EdgeInsets.only(bottom: 16),
       child: ElevatedButton.icon(
         onPressed: onPressed,
-        icon: const Icon(Icons.upload_file),
+        icon: const Icon(Icons.upload),
         label: Text(label),
         style: ElevatedButton.styleFrom(
+          minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          backgroundColor: const Color.fromARGB(255, 90, 74, 75),
+          foregroundColor: Colors.white,
         ),
       ),
     );
   }
 
   bool _isFormComplete() {
-    return _formKey.currentState?.validate() == true &&
+    return _fullNameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _addressController.text.isNotEmpty &&
+        _licenseNumberController.text.isNotEmpty &&
+        _vehicleNumberController.text.isNotEmpty &&
+        (_vehicleType == 'Bike' || _vehicleCapacityController.text.isNotEmpty) &&
         _isIdentityProofUploaded &&
         _isLicenseUploaded &&
         _isVehiclePhotoUploaded;
   }
 
   void _submitForm() {
-    if (_isFormComplete()) {
-      // Capture values from controllers
-      final fullName = _fullNameController.text;
-      final email = _emailController.text;
-      final address = _addressController.text;
-      final licenseNumber = _licenseNumber;
-      final vehicleNumber = _vehicleNumber;
-      final vehicleCapacity = _vehicleCapacity;
+    if (_formKey.currentState?.validate() ?? false) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CameraGuideScreen(),
+        ),
+      );
+    }
+  }
 
-      // Use the captured values
-      if (kDebugMode) {
-        print('Form submitted');
-        print('Full Name: $fullName');
-        print('Email: $email');
-        print('Address: $address');
-        print('Identity Proof: $_identityProof');
-        print('License Number: $licenseNumber');
-        print('Vehicle Type: $_vehicleType');
-        print('Vehicle Number: $vehicleNumber');
-        print('Vehicle Capacity: $vehicleCapacity');
-      }
+  Future<void> _requestStoragePermissionAndUpload(String documentType) async {
+    final status = await Permission.storage.request();
+    if (status.isGranted) {
+      setState(() {
+        if (documentType == 'identityProof') {
+          _isIdentityProofUploaded = true;
+        } else if (documentType == 'license') {
+          _isLicenseUploaded = true;
+        } else if (documentType == 'vehiclePhoto') {
+          _isVehiclePhotoUploaded = true;
+        }
+      });
+    } else {
+      debugPrint('Storage permission denied');
     }
   }
 }
 
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     return TextEditingValue(
       text: newValue.text.toUpperCase(),
       selection: newValue.selection,

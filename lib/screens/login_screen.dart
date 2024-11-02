@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'otp_screen.dart';
-import 'registration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -27,11 +22,11 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
               Center(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular(5.0),
                   child: Image.asset(
-                    'assets/images/driversinginpage.png',
-                    height: 300,
-                    width: 350,
+                    'assets/images/driversigninpage.png',
+                    height: 190,
+                    width: 390,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -73,67 +68,70 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      decoration: InputDecoration(
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('🇮🇳', style: TextStyle(fontSize: 24)),
-                              SizedBox(width: 8),
-                              Text('+91', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                        hintText: 'Enter Mobile Number',
-                        hintStyle: const TextStyle(color: Colors.black54),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: const BorderSide(color: Colors.teal, width: 2),
-                        ),
-                        contentPadding: const EdgeInsets.all(18.0),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your mobile number';
-                        } else if (value.length != 10) {
-                          return 'Please enter a valid 10-digit number';
-                        }
-                        return null;
+                    ElevatedButton(
+                      onPressed: () {
+                        // Add your login functionality here
                       },
-                    ),
-                    const SizedBox(height: 30),
-                    GestureDetector(
-                      onTap: () {
-                        if (_formKey.currentState!.validate()) {
-                          _navigateToOtpScreen(context);
-                        }
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.teal,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(160, 34, 45, 45),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Center(
-                          child: Text(
-                            'Continue',
+                      ),
+                      child: const Text(
+                        'Continue',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'New user?',
                             style: TextStyle(
-                              color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Register with CarriBiz Driver App by clicking below button',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    OutlinedButton(
+                      onPressed: () {
+                        // Navigate to RegistrationScreen without MaterialPageRoute
+                        Navigator.pushNamed(context, '/registration');
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color.fromRGBO(160, 34, 45, 45), width: 2),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(
+                          color: Color.fromRGBO(160, 34, 45, 45),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -145,30 +143,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  void _navigateToOtpScreen(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OTPScreen(
-          phoneNumber: _phoneController.text,
-          onVerificationSuccess: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RegistrationScreen(phoneNumber: _phoneController.text),
-              ),
-            );
-          }, mobileNumber: '',
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    super.dispose();
   }
 }
