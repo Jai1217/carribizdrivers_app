@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -26,6 +28,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _isVehiclePhotoUploaded = false;
   bool _showIdentityProofOptions = false;
   bool _showVehicleTypeOptions = false;
+  File? _identityProofFile;
+  File? _licenseFile;
+  File? _vehiclePhotoFile;
 
   @override
   void dispose() {
@@ -37,6 +42,56 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _vehicleNameController.dispose();
     _vehicleCapacityController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickIdentityProof() async {
+    if (await _requestPermission()) {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+      );
+      if (result != null && result.files.isNotEmpty) {
+        setState(() {
+          _identityProofFile = File(result.files.single.path!);
+          _isIdentityProofUploaded = true;
+        });
+      }
+    }
+  }
+
+  Future<void> _pickLicense() async {
+    if (await _requestPermission()) {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+      );
+      if (result != null && result.files.isNotEmpty) {
+        setState(() {
+          _licenseFile = File(result.files.single.path!);
+          _isLicenseUploaded = true;
+        });
+      }
+    }
+  }
+
+  Future<void> _pickVehiclePhoto() async {
+    if (await _requestPermission()) {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+      );
+      if (result != null && result.files.isNotEmpty) {
+        setState(() {
+          _vehiclePhotoFile = File(result.files.single.path!);
+          _isVehiclePhotoUploaded = true;
+        });
+      }
+    }
+  }
+
+  Future<bool> _requestPermission() async {
+    final status = await Permission.storage.request();
+    return status.isGranted;
   }
 
   @override
@@ -51,13 +106,46 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Register with us',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Modern Sans Serif'),
-                ),
-                const Text(
-                  'so that we can get to know you',
-                  style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: 'Modern Sans Serif'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Register with us',
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w300,
+                              fontFamily: 'Merriweather2',
+                            ),
+                          ),
+                          Text(
+                            'so that we can get to know you',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontFamily: 'Merriweather3',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color.fromRGBO(160, 34, 45, 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.app_registration,
+                        size: 40,
+                        color: Color.fromRGBO(160, 34, 45, 1),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 _buildTextField(
@@ -83,8 +171,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   () => setState(() => _showIdentityProofOptions = !_showIdentityProofOptions),
                 ),
                 if (_identityProof != null)
-                  _buildUploadButton('Upload Identity Proof', () => _requestStoragePermissionAndUpload('identityProof')),
-                _buildUploadButton('Upload License', () => _requestStoragePermissionAndUpload('license')),
+                  _buildUploadButton(
+                    'Upload Identity Proof',
+                    _pickIdentityProof,
+                    _isIdentityProofUploaded,
+                  ),
+                _buildUploadButton(
+                  'Upload License',
+                  _pickLicense,
+                  _isLicenseUploaded,
+                ),
                 _buildTextField(
                   'License Number',
                   _licenseNumberController,
@@ -125,8 +221,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   _vehicleCapacityController,
                   hintText: 'e.g., in kgs',
                   enabled: _vehicleType != 'Bike',
+                  validator: (value) {
+                    if (_vehicleType != 'Bike' && (value?.isEmpty ?? true)) {
+                      return 'This field is required';
+                    }
+                    return null;
+                  },
                 ),
-                _buildUploadButton('Upload Vehicle Photo', () => _requestStoragePermissionAndUpload('vehiclePhoto')),
+                _buildUploadButton(
+                  'Upload Vehicle Photo',
+                  _pickVehiclePhoto,
+                  _isVehiclePhotoUploaded,
+                ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _isFormComplete() ? _submitForm : null,
@@ -155,6 +261,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
     String? hintText,
+    String? Function(String?)? validator,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -182,7 +289,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ),
         style: const TextStyle(fontFamily: 'Modern Sans Serif'),
-        validator: (value) => value?.isEmpty ?? true ? 'This field is required' : null,
+        validator: validator ?? ((value) => value?.isEmpty ?? true ? 'This field is required' : null),
       ),
     );
   }
@@ -261,7 +368,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  Widget _buildUploadButton(String label, VoidCallback onPressed) {
+  Widget _buildUploadButton(String label, VoidCallback onPressed, bool isUploaded) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: ElevatedButton.icon(
@@ -271,7 +378,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          backgroundColor: const Color.fromARGB(255, 90, 74, 75),
+          backgroundColor: isUploaded
+              ? const Color.fromRGBO(76, 175, 80, 1) // Green color when uploaded
+              : const Color.fromARGB(255, 90, 74, 75), // Initial color
           foregroundColor: Colors.white,
         ),
       ),
@@ -279,15 +388,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   bool _isFormComplete() {
-    return _fullNameController.text.isNotEmpty &&
+    bool isBasicInfoComplete = _fullNameController.text.isNotEmpty &&
         _emailController.text.isNotEmpty &&
         _addressController.text.isNotEmpty &&
         _licenseNumberController.text.isNotEmpty &&
         _vehicleNumberController.text.isNotEmpty &&
-        (_vehicleType == 'Bike' || _vehicleCapacityController.text.isNotEmpty) &&
         _isIdentityProofUploaded &&
         _isLicenseUploaded &&
         _isVehiclePhotoUploaded;
+
+    if (_vehicleType == 'Bike') {
+      return isBasicInfoComplete;
+    } else {
+      return isBasicInfoComplete && _vehicleCapacityController.text.isNotEmpty;
+    }
   }
 
   void _submitForm() {
@@ -298,23 +412,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           builder: (context) => const CameraGuideScreen(),
         ),
       );
-    }
-  }
-
-  Future<void> _requestStoragePermissionAndUpload(String documentType) async {
-    final status = await Permission.storage.request();
-    if (status.isGranted) {
-      setState(() {
-        if (documentType == 'identityProof') {
-          _isIdentityProofUploaded = true;
-        } else if (documentType == 'license') {
-          _isLicenseUploaded = true;
-        } else if (documentType == 'vehiclePhoto') {
-          _isVehiclePhotoUploaded = true;
-        }
-      });
-    } else {
-      debugPrint('Storage permission denied');
     }
   }
 }
